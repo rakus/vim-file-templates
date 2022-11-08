@@ -1,0 +1,392 @@
+*file_template.txt*     Handles templates for new files
+Author: Ralf Schandl
+License: Same terms as Vim itself (see |license|)
+
+                  FILE TEMPLATE PLUG-IN
+
+Handles templates for new files.          *file-templates* *ftmpl* *rks-ftmpl*
+
+   Introduction                 |ftmpl-intro|
+   Commands                     |ftmpl-commands|
+   Configuration                |ftmpl-config|
+   Template Files               |ftmpl-files|
+   Supported Headers            |ftmpl-headers|
+   Supported Tags               |ftmpl-tags|
+   Example Template File        |ftmpl-example|
+   Custom Tags                  |ftmpl-custom-tags|
+   Test Template                |ftmpl-test|
+
+==============================================================================
+Introduction                                                     *ftmpl-intro*
+
+This plug-in handles file templates for new files created with VIM.
+
+Whenever a new (aka not-existing) file is opened in VIM the plug-in checks
+if there is a template for the file-type (see |filetype|) and loads that
+template. The template might contain special tags (see |ftmpl-tags|) that are
+automatically expanded. The file is not modified, when the template was
+loaded via autocmd.
+
+Templates can also be applied to existing files using the command |:Template|.
+
+This plug-in allows the addition of custom templates and custom tags.
+
+NOTE: If the buffer-local variable `b:skip_file_templates` is set, template
+processing via autocmd is skipped. This variable might be set by another
+autocmd.
+
+
+==============================================================================
+Commands                                                      *ftmpl-commands*
+
+                                                                   *:Template*
+:Template               Applies the templates for the file-type to the current
+                        file. If no file-type is set or there is no matching
+                        template, a error message is displayed.
+
+:Template <file-type>   Applies the templates for the given file-type to the
+                        current file. If no matching template is available,
+                        a error message is displayed.
+
+==============================================================================
+Configuration                                      *ftmpl-config* *ftmpl-vars*
+
+The plug-in acts on some global variables:
+
+g:user                  The full name of the user.
+
+g:email                 The email address of the user.
+
+g:contact               Contact info of the user. Typically name and email.
+                        (e.g.: `Joe Cool <cool@example.com>`)
+
+g:userid                The login user id.
+
+g:usertag               A special abbreviation used by the user to mark
+                        something. See `g:fileTemplateUserTagLen` below.
+
+g:fileTemplateUserTagLen
+                        This can be used to define a length when g:usertag is
+                        inserted. If the usertag is shorter than defined here,
+                        it is padded with trailing spaces.
+                        This is useful if the template contains some
+                        table-like change log comment.
+
+g:fileTemplateWhichFunction
+                        This defines a custom function to handle the first line
+                        of script files. See |ftmpl-hash-bang|.
+
+g:fileTemplateCustomTags
+                        This global dictionary is used to add custom tags that
+                        should be handled by the plug-in. See
+                        |ftmpl-custom-tags|.
+
+g:fileTemplateForceModified
+                        When a template is loaded for a new file via autocmd,
+                        the file is marked as not modified (see
+                        |autocmd-events|). If `g:fileTemplateForceModified` is
+                        set to 1, the file is marked as 'modified'.
+
+==============================================================================
+Template Files                                                   *ftmpl-files*
+
+Template file are text files, that contains special markers that are replaced
+while loading the template.
+
+To provide own templates or to overwrite a existing template, create the sub-
+directory `templates` in `$HOME/.vim` (Unix) or `$HOME\vimfile` (Windows).
+Then place your template file in that directory. The template files must have
+the basename `tmpl` and the extension like the file-type(e.g. `tmpl.java` for
+Java files). The template might start with some special lines, see
+|ftmpl-headers|.
+
+Virtual Filetypes
+-----------------
+Sometimes the filetype alone is not enough to determine the template to use.
+For this cases the plugin uses "virtual filetypes". A virtual filetype is
+determined from the actual filetype and one or more globbing expressions.
+
+E.g.: If the filetype is `c`, but the filename matches is `*.h` or `*.H`, the
+virtual filetype `h` is used. Then the template `tmpl.h` is loaded.
+
+The following virtual filetypes are defined by default:
+
+filetype | glob pattern        | virtual filetype
+---------+---------------------+------------------
+`c`        | `*.h`, `*.H`            |  `h`
+`cpp`      | `*.hh`, `*.hxx`, `*.hpp`  |  `hpp`
+`xml`      | `pom.xml`             |  `pom`
+
+
+To extend this functionality, define the global variable
+`g:fileTemplateVirtualFt`.
+
+Example: If a shell scripts (filetyp "sh") is named `Test*.sh`, load the
+template from the file `tmpl.testscript`. If the file is named `Prod*.sh` or
+`prod*.sh` load then template `tmpl.prodscript`.
+>
+    let g:fileTemplateVirtualFt =
+            \ {
+            \   'sh': [
+            \     { 'glob': [ 'Test*.sh' ], 'virt_ft': 'testscript' },
+            \     { 'glob': [ 'Prod*.sh', 'prod*.sh' ], 'virt_ft': 'prodscript' }
+            \   ]
+            \ }
+<
+
+Note that `g:fileTemplateVirtualFt` is checked first, so it is possible to
+overwrite the internal configuration.
+
+Hash-Bang                                                    *ftmpl-hash-bang*
+---------
+If the first line of the template (after optional |ftmpl-headers|) starts with
+"#!" the following word is searched in the $PATH and replaced with the
+absolute path to the executable. So `#!perl` is replaced with something like
+`#!/usr/bin/perl`. If the full path cannot be determined, the line is not
+altered. This uses the function |exepath()|.
+
+If another handling of the hash-bang is wanted, a custom function can be
+named via `g:fileTemplateWhichFunction`. The given parameter is the first word
+from the hash-bang line.
+>
+    function MyHashBang(name)
+      return '/usr/bin/env ' . a:name
+    endfunction
+    let g:fileTemplateWhichFunction = 'MyHashBang'
+<
+
+Trailer                                                        *ftmpl-trailer*
+-------
+If the template file contains a trailer (like a modeline for vim), it must be
+enclosed in `[%Trailer%][%/Trailer%]` (each on a line of it's own, no leading
+or trailing whitespaces!).  The lines containing this tags are removed and the
+trailer lines are moved to the end of the file. Handy when a template is
+applied to a existing file (with the command |:Template|).
+Example: >
+    [%TRAILER%]
+    # vim:tw=78:et
+    [%/TRAILER%]
+<
+
+CVS $Id:$                                                          *ftmpl-cvs*
+---------
+The CVS "Id" keyword is replaced with its none expanded form.
+
+(Yes, I know that CVS is obsolete. But this extension is rather old.)
+
+
+==============================================================================
+Supported Headers                                              *ftmpl-headers*
+
+Header entries must be in the first line(s) of the template file, and have the
+following format:
+>
+    [%%name=value%%]
+<
+The opening [ must be on the first column. No trailing text is allowed.
+The lines containing this entries are removed before further processing is
+done. So the line following the header lines is in fact the first line of the
+processed template.
+
+The following header lines are supported:
+
+[%%cmt=...%%]           This is just a comment. It can be used multiple
+                        times. This can be used to add a |modeline| for the
+                        template file. E.g.:
+>
+                            [%%cmt= vim:set ft=dosbatch: %%]
+<
+More to come - maybe ...
+
+==============================================================================
+Supported Tags                                                    *ftmpl-tags*
+
+After loading the template several tags are replaced:
+
+[%CURSOR%]              Place the cursor here.
+
+[%TRAILER%]/[%/TRAILER%]
+                        The lines between the lines containing this tags are
+                        moved to the end of the file.
+                        See |ftmpl-trailer|.
+                        THE LINES CONTAINING THE TAGS ITSELF ARE REMOVED.
+
+[%EOF%]                 Gets overwritten(!) with `[ END OF FILE [%fn%] ]`
+                        Example:
+>
+                            -----[%EOF%]------------------------------
+<
+                        becomes:
+>
+                            -----[ END OF FILE newfile.vim ]----------
+<
+
+                        This is only replaced if there are enough chars to
+                        overwrite.
+
+[%user%]                Replaced with the value of the variable "g:user".
+
+[%email%]               Replaced with the value of the variable "g:email".
+
+[%contact%]             Replaced with the value of the variable "g:contact".
+
+[%userid%]              Replaced with the value of the variable "g:userid".
+
+[%usertag%]             Replaced with the value of the variable "g:usertag".
+
+[%fn%]                  Replaced with the current file name (without path).
+
+[%fn_%]                 Like [%fn%], but all none-identifier characters are
+                        replaced with a underscore.  Identifier chars are:
+                        A-Z, a-z, 0-9 and _. Example:
+>
+                             #ifndef [%fn_%]_INCLUDED
+<
+[%fn_base%]             Replaced with the current file name without extension.
+
+[%fn_ext%]              Replaced with the extension of the current file.
+
+[%date%]                Current date like "2004-02-04"
+                        (`strftime("%Y-%m-%d")`).
+                        If |strftime| is not available, the tag is just
+                        removed.
+
+[%timestamp%]           A ISO8601-like time stamp: "2017-06-14T07:47:22+0200"
+                        (`strftime("%Y-%m-%dT%H:%M:%S%z")`)
+                        If |strftime| is not available, the tag is just
+                        removed.
+
+[%localdate%]           Current date in the local format (`strftime("%c")`)
+                        This will produce different results in different
+                        locales.
+                        If |strftime| is not available, the tag is just
+                        removed.
+
+[%strftime="fmt"%]      Current date, using fmt as input format for
+                        |strftime()|. The quotes are important!
+                        WARNING: Depending of the used format, this might not
+                        be portable.
+                        If |strftime| is not available, the tag is just
+                        removed.
+
+[%$xxx%]                Expands to the value of the environment variable
+                        `xxx`.
+                        Example: `[%$HOME%]`
+
+[%&xxx%]                Expands to the value of the vim option `xxx`.
+                        Example: `[%&path%]`
+
+[%=xxx%]                Expands to the value of the vim variable `xxx`.
+                        Example: `[%=v:progpath%]`
+
+[%ld%]                  Left delimiter. Replaced with "[%".
+
+[%rd%]                  Right delimiter. Replaced with "%]".
+
+
+==============================================================================
+Example Template File                                          *ftmpl-example*
+
+This is my template for C include files (tmpl.h):
+>
+    /*!
+     * @file [%fn%]
+     *
+     * @brief
+     *
+     * @author [%contact%]
+     * @date   [%date%]
+     */
+    #ifndef [%fn_%]_INCLUDED
+    #define [%fn_%]_INCLUDED
+
+    [%CURSOR%]
+
+    [%TRAILER%]
+    #endif /* ! [%fn_%]_INCLUDED */
+    [%/TRAILER%]
+<
+
+==============================================================================
+Custom Tags                                                *ftmpl-custom-tags*
+
+Custom tags are defined in the global dictionary `g:fileTemplateCustomTags`.
+The keys of this dictionary must be strings and the values might be strings,
+numbers or |Funcref|s.
+
+Simple Tags
+-----------
+Simple tags are used for static replacements.
+Example: >
+    let g:fileTemplateCustomTags = {}
+    let g:fileTemplateCustomTags["COMPANY"] = "ACME Inc"
+<
+With this configuration, the tag `[%COMPANY%]` in a template is replaced with
+"ACME Inc".
+
+Function References
+-------------------
+The value of a tag might also be a function reference. In this case the
+function is called when the corresponding tag is found and the returned string
+is inserted for the tag.
+BTW: Trailing newlines are removed from the returned string.
+Example: >
+    function UcFilename()
+        return toupper(expand("%:t"))
+    endfunc
+    let g:fileTemplateCustomTags = {}
+    let g:fileTemplateCustomTags["UC_FN"] = function("UcFilename")
+<
+With this configuration the tag `[%UC_FN%]` is replaced with the file name
+written all upper-case.
+
+Function References with Parameter
+----------------------------------
+If the tag value is a function reference it is also possible to give
+parameters to this function.
+Example: >
+    let g:fileTemplateCustomTags = {}
+    let g:fileTemplateCustomTags["repl"] = function("substitute")
+    let g:fileTemplateCustomTags["exec"] = function("system")
+
+<
+Now the tag "repl" is a function reference to the VIM function |substitute|
+and "exec" is a function reference to the VIM function |system|.
+
+If the template contains the following entry: >
+    [%repl=expand("%:t"), "^.", "\\u\\0", ""%]
+<
+it results in a call to the function `susbstitute` like: >
+    substitute(expand("%:t"), "^.", "\\u\\0", "")
+<
+This call capitalizes the first character of the file name. The resulting
+string is used to replace the tag.
+
+The following tag >
+    [%exec="uname -srm"%]
+<
+calls the command line utility `uname -srm`. The output of that command is
+than used to replace the tag.
+
+
+==============================================================================
+Test Template                                                     *ftmpl-test*
+
+The plug-in comes with a own test template. It is called `tmpl.tmpltest`.
+To run the test:
+
+1. Open vim with a none existing text file: `vim not-there.txt`
+2. Run the command `:Template tmpltest`
+
+This will load the template for the pseudo-filetype "tmpltest" and replace all
+tags. Some of the tags are invalid. So error messages will be produced for the
+lines 32 to 36: >
+    32: Unknown tag: nixda
+    33: Invalid expression: "%d %b %Y
+    34: Undefined environment variable or Vim option: $UNK_VAR
+    35: Undefined environment variable or Vim option: &unkOpt
+    36: Unknown Vim variable: unkVar
+<
+
+
+ vim:tw=78:et:ft=help:norl:

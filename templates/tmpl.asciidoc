@@ -1,0 +1,22 @@
+
+= [%CURSOR%]
+:author:    [%user%]
+:email:     [%email%]
+:authorinitials: [%usertag%]
+:revnumber: 1.0
+:revdate:   {localdate}
+:revremark: Initial release
+:copyright-year: [%strftime="%Y"%]
+:create-timestamp: [%timestamp%]
+:doctype: book
+:icons: font
+:toc: left
+:numbered:
+// enable experimental for btn:[...].
+//:experimental:
+
+
+
+[%TRAILER%]
+// vim:ft=asciidoc:et:ts=4:spelllang=en_us:spell
+[%/TRAILER%]

@@ -1,0 +1,9 @@
+[%%cmt= vim:set ft=markdown:et:ts=4:spelllang=en_us:spell:tw=80: %%]
+---
+layout: post
+title:  "[%CURSOR%]"
+date:   [%strftime="%Y-%m-%d %H:%M:%S %z"%]
+published: false
+tags: []
+---
+

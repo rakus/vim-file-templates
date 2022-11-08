@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId></groupId>
+        <artifactId></artifactId>
+        <version></version>
+    </parent>
+
+    <groupId></groupId>
+    <artifactId></artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <name></name>
+
+    <description>
+    </description>
+
+    <url>http://</url>
+    <inceptionYear>[%strftime="%Y"%]</inceptionYear>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.testTarget>1.8</maven.compiler.testTarget>
+        <maven.compiler.testSource>1.8</maven.compiler.testSource>
+    </properties>
+
+    <developers>
+        <developer>
+            <id></id>
+            <name>[%user%]</name>
+            <email>[%email%]</email>
+            <timezone>Europe/Berlin</timezone>
+            <roles>
+                <role>Owner</role>
+                <role>Developer</role>
+            </roles>
+        </developer>
+    </developers>
+
+    <organization>
+        <name></name>
+        <url>http://</url>
+    </organization>
+
+    <licenses>
+        <license>
+            <name></name>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:git:git@github.com:/YYY/XXX.git</connection>
+        <developerConnection>scm:git:git@github.com:YYY/XXX.git</developerConnection>
+        <url>https://github.com/YYY/XXX</url>
+        <tag>HEAD</tag>
+    </scm>
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/YYY/XXX/issues</url>
+    </issueManagement>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId></groupId>
+                <artifactId></artifactId>
+                <version></version>
+                <type></type>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId></groupId>
+            <artifactId></artifactId>
+            <version></version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId></groupId>
+                    <artifactId></artifactId>
+                    <version></version>
+                    <configuration>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <phase>XXX</phase>
+                            <goals>
+                                <goal>XXX</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+        <plugins>
+            <plugin>
+                <groupId></groupId>
+                <artifactId></artifactId>
+                <version></version>
+                <configuration>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>XXX</phase>
+                        <goals>
+                            <goal>XXX</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+

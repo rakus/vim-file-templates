@@ -1,0 +1,12 @@
+*[%fn%]*
+Author: [%user%]
+License: Same terms as Vim itself (see |license|)
+
+                  [%CURSOR%]DOCUMENTATION TITLE
+
+Short description....                                           *tag*
+
+
+[%TRAILER%]
+ vim:tw=78:ts=8:noet:ft=help:norl:
+[%/TRAILER%]

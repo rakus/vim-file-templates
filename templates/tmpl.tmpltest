@@ -1,0 +1,41 @@
+
+Example file to test the expansion of template tags.
+Open a empty file and execute ":Template tmpltest"
+Should produce an error messages for lines 32 to 36.
+Use command :messages to list messages
+
+[%TRAILER%]
+Trailer text. This should be the last line.
+[%/TRAILER%]
+
+[%ld%]CURSOR[%rd%]                     <[%CURSOR%]>
+[%ld%]fn[%rd%]                         <[%fn%]>
+[%ld%]fn_[%rd%]                        <[%fn_%]>
+[%ld%]fn_base[%rd%]                    <[%fn_base%]>
+[%ld%]fn_ext[%rd%]                     <[%fn_ext%]>
+[%ld%]EOF[%rd%]                        <[%EOF%]                                   >75
+[%ld%]date[%rd%]                       <[%date%]>
+[%ld%]timestamp[%rd%]                  <[%timestamp%]>
+[%ld%]localdate[%rd%]                  <[%localdate%]>
+[%ld%]strftime="%d %b %Y"[%rd%]        <[%strftime="%d %b %Y"%]>
+[%ld%]user[%rd%]                       <[%user%]>
+[%ld%]contact[%rd%]                    <[%contact%]>
+[%ld%]userid[%rd%]                     <[%userid%]>
+[%ld%]email[%rd%]                      <[%email%]>
+[%ld%]usertag[%rd%]                    <[%usertag%]>
+[%ld%]ld[%rd%]                         <[%ld%]>
+[%ld%]rd[%rd%]                         <[%rd%]>
+[%ld%]ld[%rd%][%ld%]rd[%rd%]                   <[%ld%][%rd%]>
+[%ld%]ld[%rd%]rd[%ld%]rd[%rd%]                 <[%ld%]rd[%rd%]>
+
+[%ld%]$HOME[%rd%]                      <[%$HOME%]>
+[%ld%]&path[%rd%]                      <[%&path%]>
+[%ld%]=v:progpath[%rd%]                <[%=v:progpath%]>
+
+ERROR unknown tag:             <[%nixda%]>
+ERROR invalid expression:      <[%strftime="%d %b %Y%]>
+ERROR unknown env var:         <[%$UNK_VAR%]>
+ERROR unknown Vim option:      <[%&unkOpt%]>
+ERROR unknown Vim var:         <[%=unkVar%]>
+
+Text for Trailer goes below this line:

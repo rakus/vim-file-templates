@@ -1,0 +1,19 @@
+[%%cmt= vim:set ft=dosbatch: %%]
+@echo off
+rem
+rem File: [%fn%]
+rem
+rem Author   [%contact%]
+rem Created  [%date%]
+rem
+
+SETLOCAL ENABLEEXTENSIONS
+set SCRIPT=%~0
+set SCRIPT_FULLPATH=%~dpf0
+set SCRIPTDRIVE=%~d0
+set SCRIPTDIR=%~dp0
+set SCRIPTDIR=%SCRIPTDIR:~0,-1%
+
+[%CURSOR%]
+
+
